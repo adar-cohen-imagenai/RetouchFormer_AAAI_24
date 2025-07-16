@@ -7,7 +7,6 @@ import random
 import functools
 import operator
 import itertools
-from turtle import up
 
 import torch
 from torch import nn
@@ -23,7 +22,7 @@ class Encoder(nn.Module):
             size,
             channel_multiplier=2,
             narrow=1,
-            device='cuda'
+            device='cpu'
     ):
         super().__init__()
         channels = {
@@ -69,7 +68,7 @@ class Decoder(nn.Module):
             blur_kernel=[1, 3, 3, 1],
             isconcat=True,
             narrow=1,
-            device='cuda'
+            device='cpu'
     ):
         super().__init__()
 

@@ -1,0 +1,43 @@
+{
+    "seed": 2022,
+    "save_dir": "checkpoints_subset/",
+    "eval_txt": "RetouchFormer_subset.txt",
+    "train_data_loader": {
+        "dataroot": "/data/data/face_retouch/face_retouching_subset",
+        "size" : 512,
+        "percentage": 1
+    },
+    "losses": {
+        "valid_weight": 1000,
+        "mask_weight": 10,
+        "vgg_weight": 1,
+        "lpips_weight": 10,
+        "id_weight": 1,
+        "adversarial_weight": 1,
+        "ssim_weight": 10,
+        "GAN_LOSS": "hinge"
+    },
+    "model": {
+        "net": "RetouchFormer",
+        "no_dis": 0
+    },
+    "trainer": {
+        "use_wandb": 0,
+        "use_tensorboard": 1,
+        "type": "Adam",
+        "beta1": 0.9,
+        "beta2": 0.99,
+        "lr": 2e-4,
+        "batch_size": 1,
+        "num_workers": 1,
+        "log_freq": 10,
+        "val_freq": 50,
+        "save_freq": 100,
+        "iterations": 2000,
+        "scheduler": {
+            "type": "CosineAnnealingRestartLR",
+            "periods": [500, 200, 200, 200],
+            "restart_weights": [1, 0.5, 0.5, 0.5]
+        }
+    }
+} 

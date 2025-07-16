@@ -60,7 +60,7 @@ def init_i3d_model():
     print(f"[Loading I3D model from {i3d_model_path} for FID score ..]")
     i3d_model = InceptionI3d(400, in_channels=3, final_endpoint='Logits')
     i3d_model.load_state_dict(torch.load(i3d_model_path))
-    i3d_model.to(torch.device('cuda:0'))
+    i3d_model.to(torch.device('cpu'))  # Will be moved to correct device when used
     return i3d_model
 
 
