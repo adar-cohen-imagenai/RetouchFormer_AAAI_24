@@ -1,9 +1,9 @@
 {
     "seed": 2022,
-    "save_dir": "checkpoints_subset/",
-    "eval_txt": "RetouchFormer_subset.txt",
+    "save_dir": "checkpoints_enhanced_full/",
+    "eval_txt": "RetouchFormer_enhanced_full.txt",
     "train_data_loader": {
-        "dataroot": "/data/data/face_retouch/face_retouching_subset",
+        "dataroot": "/data/data/face_retouch/face_retouching_ffhqr_dataset",
         "size" : 512,
         "percentage": 1
     },
@@ -30,14 +30,19 @@
         "lr": 2e-4,
         "batch_size": 1,
         "num_workers": 1,
-        "log_freq": 10,
-        "val_freq": 50,
-        "save_freq": 100,
-        "iterations": 2000,
+        "log_freq": 100,
+        "val_freq": 5000,
+        "save_freq": 10000,
+        "iterations": 500000,
         "scheduler": {
             "type": "CosineAnnealingRestartLR",
-            "periods": [500, 200, 200, 200],
+            "periods": [125000, 50000, 50000, 50000],
             "restart_weights": [1, 0.5, 0.5, 0.5]
         }
-    }
+    },
+    "device": "cuda:3",
+    "distributed": false,
+    "world_size": 1,
+    "global_rank": 0,
+    "local_rank": 0
 } 
