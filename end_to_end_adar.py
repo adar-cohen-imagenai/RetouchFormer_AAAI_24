@@ -348,7 +348,7 @@ class EndToEndRetouchPipeline:
             result_bgr = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
             cv2.imwrite(output_path, result_bgr)
             
-            faces_msg = f"✅ Processed {len(face_crops)} face(s) in: {Path(image_path).name}"
+            faces_msg = f"Processed {len(face_crops)} face(s) in: {Path(image_path).name}"
             if self.save_face_crops and face_crops_dir:
                 faces_msg += f" (comparisons saved to {face_crops_dir.name}/)"
             print(faces_msg)
@@ -391,12 +391,12 @@ class EndToEndRetouchPipeline:
             image_files.extend(input_path.glob(f'*{ext.upper()}'))
         
         if len(image_files) == 0:
-            print(f"❌ No image files found in: {input_dir}")
+            print(f"No image files found in: {input_dir}")
             return
         
-        print(f"🎯 Found {len(image_files)} images to process")
+        print(f"Found {len(image_files)} images to process")
         if self.save_face_crops:
-            print(f"📸 Face crop comparisons will be saved to: {face_crops_output_base}")
+            print(f"Face crop comparisons will be saved to: {face_crops_output_base}")
         
         # Start timing
         start_time = time.time()
@@ -424,17 +424,17 @@ class EndToEndRetouchPipeline:
         end_time = time.time()
         total_time = end_time - start_time
         
-        print(f"\n✨ Processing complete! Successfully processed {success_count}/{len(image_files)} images")
-        print(f"👥 Total faces processed: {total_faces}")
-        print(f"⏱️  Total time: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
+        print(f"\nPsrocessing complete! Successfully processed {success_count}/{len(image_files)} images")
+        print(f"Total faces processed: {total_faces}")
+        print(f"Total time: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
         if success_count > 0:
-            print(f"📊 Average time per image: {total_time/success_count:.2f} seconds")  
+            print(f"Average time per image: {total_time/success_count:.2f} seconds")
         if total_faces > 0:
-            print(f"🎯 Average time per face: {total_time/total_faces:.2f} seconds")
-        print(f"📁 Original images copied to: {output_dir}")
-        print(f"🎨 Retouched images saved as: *_output{image_files[0].suffix} in {output_dir}")
+            print(f"Average time per face: {total_time/total_faces:.2f} seconds")
+        print(f"Original images copied to: {output_dir}")
+        print(f"Retouched images saved as: *_output{image_files[0].suffix} in {output_dir}")
         if self.save_face_crops:
-            print(f"📸 Face comparisons saved to: {face_crops_output_base}")
+            print(f"Face comparisons saved to: {face_crops_output_base}")
 
 
 def main():

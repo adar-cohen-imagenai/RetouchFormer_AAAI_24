@@ -76,6 +76,8 @@ tensorboard --logdir checkpoints_subset/RetouchFormer_RetouchFormer_subset_train
 python test_training_setup.py
 ```
 
+dont use emojies in printing and also not things like "="*60
+
 ## Architecture Overview
 
 ### Core Components

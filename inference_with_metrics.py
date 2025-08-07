@@ -39,7 +39,7 @@ def load_model(model_name="RetouchFormer", checkpoint_path="release_model", epoc
     model_path = f"{checkpoint_path}/gen_{epoch}.pth"
     data = torch.load(model_path, map_location=device)
     model.load_state_dict(data)
-    print(f'✅ Loading model from: {model_path}')
+    print(f'Loading model from: {model_path}')
     model.eval()
     return model, device
 
@@ -51,7 +51,7 @@ def run_inference(model, device, input_path, temp_output_dir):
     
     os.makedirs(temp_output_dir, exist_ok=True)
     
-    print(f"🚀 Running inference on {len(test_dataset)} images...")
+    print(f"Running inference on {len(test_dataset)} images...")
     for name, source_tensor in tqdm(test_loader, desc="Inference"):
         name = name[0]
         with torch.no_grad():
@@ -97,7 +97,7 @@ def create_fat_images_and_compute_metrics(source_dir, target_dir, temp_output_di
     source_images = sorted(glob.glob(os.path.join(source_dir, "*.png")))
     results = []
     
-    print(f"🖼️  Creating fat images and computing metrics for {len(source_images)} samples...")
+    print(f"Creating fat images and computing metrics for {len(source_images)} samples...")
     
     for source_path in tqdm(source_images, desc="Processing"):
         base_name = os.path.splitext(os.path.basename(source_path))[0]
@@ -109,10 +109,10 @@ def create_fat_images_and_compute_metrics(source_dir, target_dir, temp_output_di
         
         # Check if files exist
         if not os.path.exists(output_path):
-            print(f"⚠️  Warning: Output file not found: {output_path}")
+            print(f"Output file not found: {output_path}")
             continue
         if not os.path.exists(target_path):
-            print(f"⚠️  Warning: Target file not found: {target_path}")
+            print(f"Target file not found: {target_path}")
             continue
         
         # Load and resize images
@@ -157,21 +157,18 @@ def create_fat_images_and_compute_metrics(source_dir, target_dir, temp_output_di
 def print_metrics_summary(results):
     """Print comprehensive metrics summary"""
     if not results:
-        print("❌ No results to display!")
+        print("No results to display")
         return
     
     df = pd.DataFrame(results)
     
-    print("\n" + "="*80)
-    print("📊 RETOUCHFORMER METRICS SUMMARY")
-    print("="*80)
+    print("RETOUCHFORMER METRICS SUMMARY")
+
+    print(f"PROCESSED: {len(df)} images")
     
-    print(f"\n📋 PROCESSED: {len(df)} images")
-    
-    print(f"\n📊 AVERAGE METRICS:")
+    print(f"AVERAGE METRICS:")
     print(f"{'Metric':<8} {'Input vs Target':<18} {'Output vs Target':<18} {'Improvement':<12}")
-    print("-" * 60)
-    
+
     metrics = ['MSE', 'MAE', 'PSNR', 'SSIM']
     for metric in metrics:
         input_col = f'Input_vs_Target_{metric}'
@@ -184,7 +181,7 @@ def print_metrics_summary(results):
         
         print(f"{metric:<8} {input_avg:<18.4f} {output_avg:<18.4f} {improvement_avg:<12.4f}")
     
-    print(f"\n📈 IMPROVEMENT ANALYSIS:")
+    print(f"IMPROVEMENT ANALYSIS:")
     mse_improvements = (df['MSE_Improvement'] > 0).sum()
     mae_improvements = (df['MAE_Improvement'] > 0).sum()
     psnr_improvements = (df['PSNR_Improvement'] > 0).sum()
@@ -216,23 +213,21 @@ def main():
     
     args = parser.parse_args()
     
-    print("🎯 RetouchFormer Single Inference Script")
-    print("="*80)
-    
+    print("RetouchFormer Single Inference Script")
+
     # Create temporary directory for inference outputs
     temp_output_dir = "temp_inference_outputs"
     
     try:
-        # Step 1: Load model
-        print("1️⃣  Loading model...")
+        print("Loading model")
         model, device = load_model(args.model, args.checkpoint_path, args.epoch)
         
         # Step 2: Run inference
-        print("\n2️⃣  Running inference...")
+        print("Running inference")
         run_inference(model, device, args.source_dir, temp_output_dir)
         
         # Step 3: Create fat images and compute metrics
-        print("\n3️⃣  Creating fat images and computing metrics...")
+        print("Creating fat images and computing metrics")
         results = create_fat_images_and_compute_metrics(
             args.source_dir, args.target_dir, temp_output_dir, args.output_dir
         )
@@ -242,24 +237,22 @@ def main():
             csv_path = os.path.join(args.output_dir, "metrics.csv")
             df = pd.DataFrame(results)
             df.to_csv(csv_path, index=False)
-            print(f"💾 Metrics saved to: {csv_path}")
+            print(f"Metrics saved to: {csv_path}")
         
         # Step 5: Print summary
         print_metrics_summary(results)
         
-        print("\n" + "="*80)
-        print("✅ INFERENCE COMPLETE!")
-        print("="*80)
-        print(f"📁 Fat comparison images: {args.output_dir}/")
-        print(f"📊 Metrics CSV: {args.output_dir}/metrics.csv")
-        print(f"🖼️  Total images processed: {len(results)}")
+        print("INFERENCE COMPLETE!")
+        print(f"Fat comparison images: {args.output_dir}/")
+        print(f"Metrics CSV: {args.output_dir}/metrics.csv")
+        print(f"Total images processed: {len(results)}")
         
     finally:
         # Cleanup temporary directory
         if os.path.exists(temp_output_dir):
             import shutil
             shutil.rmtree(temp_output_dir)
-            print(f"🧹 Cleaned up temporary files")
+            print(f"Cleaned up temporary files")
 
 
 if __name__ == "__main__":

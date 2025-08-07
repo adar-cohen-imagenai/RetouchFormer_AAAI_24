@@ -228,11 +228,11 @@ class Trainer:
                 self.scheD.load_state_dict(data_opt['scheD'])
             self.epoch = data_opt['epoch']
             self.iteration = data_opt['iteration']
-            print(f"🎭 Initial mask evaluation at iteration {self.iteration} (placeholder)")
+            print(f"Initial mask evaluation at iteration {self.iteration} (placeholder)")
             # self.test(self.iteration, lr = self.get_lr())
         else:
             if self.config['global_rank'] == 0:
-                print('Warnning: There is no trained model found. An initialized model will be used.')
+                print('There is no trained model found. An initialized model will be used.')
 
     def save(self, it):
         """Save parameters every eval_epoch"""
@@ -244,7 +244,7 @@ class Trainer:
                                     f'dis_{it:06d}.pth')
             opt_path = os.path.join(self.config['save_dir'],
                                     f'opt_{it:06d}.pth')
-            print(f'\nsaving model to {gen_path} ...')
+            print(f'saving model to {gen_path} ...')
 
             # remove .module for saving
             if isinstance(self.netG, torch.nn.DataParallel) \
@@ -328,7 +328,7 @@ class Trainer:
         # This method evaluates attention mask quality during training
         # For now, we'll implement a simple version that doesn't break training
         if self.config['global_rank'] == 0:
-            print(f"🎭 Mask evaluation at iteration {iteration} (placeholder)")
+            print(f"Mask evaluation at iteration {iteration} (placeholder)")
         pass
 
     def train(self):
@@ -369,12 +369,10 @@ class Trainer:
             
             # Check if debug mode just ended
             if debug_enabled and self.epoch == debug_epochs and self.config['global_rank'] == 0:
-                print("\n" + "="*80)
-                print("🎉 DEBUG MODE COMPLETE!")
-                print(f"✅ Successfully completed {debug_epochs} debug epochs")
-                print("🚀 Now starting FULL TRAINING...")
-                print("="*80 + "\n")
-            
+                print("DEBUG MODE COMPLETE!")
+                print(f"uccessfully completed {debug_epochs} debug epochs")
+                print("Now starting FULL TRAINING...")
+
             # self.update_learning_rate()
             if self.iteration > self.train_args['iterations']:
                 break
@@ -423,7 +421,7 @@ class Trainer:
         # Add numerical stability: clamp values and check for NaN
         head2_pair_lq_clamped = torch.clamp(head2_pair_lq, min=1e-7, max=1-1e-7)
         if torch.isnan(head2_pair_lq_clamped).any() or torch.isinf(head2_pair_lq_clamped).any():
-            print("⚠️ Warning: NaN/Inf detected in head2_pair_lq, skipping head2_loss")
+            print("NaN/Inf detected in head2_pair_lq, skipping head2_loss")
             # Create a zero loss that's connected to the computation graph
             head2_loss = 0.0 * head2_pair_lq_clamped.mean()
         else:

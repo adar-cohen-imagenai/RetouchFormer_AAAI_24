@@ -9,9 +9,8 @@ from core.trainer_enhanced import EnhancedTrainer
 from core.dist import get_world_size, get_local_rank, get_global_rank, get_master_ip
 
 def test_training_setup():
-    print("🧪 Testing RetouchFormer Training Setup...")
-    print("="*60)
-    
+    print("Testing RetouchFormer Training Setup...")
+
     # Load config
     config_path = './configs/RetouchFormer_subset_trainer.json'
     config = json.load(open(config_path))
@@ -27,7 +26,7 @@ def test_training_setup():
     else:
         config['device'] = 'cpu'
     
-    print(f"✅ Configuration loaded:")
+    print(f"Configuration loaded:")
     print(f"  Dataset path: {config['train_data_loader']['dataroot']}")
     print(f"  Device: {config['device']}")
     print(f"  Iterations: {config['trainer']['iterations']}")
@@ -35,16 +34,16 @@ def test_training_setup():
     
     try:
         # Initialize trainer (this will load datasets and models)
-        print("\n🔧 Initializing trainer...")
+        print("Initializing trainer...")
         trainer = EnhancedTrainer(config)
         
-        print(f"✅ Trainer initialized successfully!")
+        print(f"Trainer initialized successfully!")
         print(f"  Train dataset size: {len(trainer.train_dataset)}")
         print(f"  Test dataset size: {len(trainer.test_dataset)}")
         print(f"  Unpaired dataset size: {len(trainer.unpair_dataset)}")
         
         # Test a single forward pass
-        print("\n🧪 Testing single forward pass...")
+        print("Testing single forward pass...")
         device = config['device']
         
         # Get a sample from the train loader
@@ -63,17 +62,17 @@ def test_training_setup():
             print(f"  Output shape: {pred_img.shape}")
         
         # Test validation
-        print("\n🧪 Testing validation...")
+        print("Testing validation...")
         psnr, ssim, lpips = trainer.test(0, lr=0.0002)
         print(f"  Initial validation - PSNR: {psnr:.4f}, SSIM: {ssim:.4f}, LPIPS: {lpips:.4f}")
         
-        print("\n✅ All tests passed! Training setup is ready.")
-        print("🚀 You can now start training with: python train_subset.py")
+        print("All tests passed! Training setup is ready.")
+        print("You can now start training with: python train_subset.py")
         
         return True
         
     except Exception as e:
-        print(f"\n❌ Error during setup: {str(e)}")
+        print(f"Error during setup: {str(e)}")
         import traceback
         traceback.print_exc()
         return False

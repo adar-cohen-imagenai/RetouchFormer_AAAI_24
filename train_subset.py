@@ -35,7 +35,7 @@ def main_worker(rank, config):
                                              world_size=config['world_size'],
                                              rank=config['global_rank'],
                                              group_name='mtorch')
-        print(f'🚀 Using GPU {int(config["global_rank"])}-{int(config["local_rank"])} for training')
+        print(f'Using GPU {int(config["global_rank"])}-{int(config["local_rank"])} for training')
     
     config['save_dir'] = os.path.join(
         config['save_dir'],
@@ -59,7 +59,7 @@ def main_worker(rank, config):
                                    args.config.split('/')[-1])
         if not os.path.isfile(config_path):
             copyfile(args.config, config_path)
-        print(f'📁 Created output directories:')
+        print(f'Created output directories:')
         print(f'  Checkpoints: {config["save_dir"]}')
         print(f'  Metrics: {config["save_metric_dir"]}')
 
@@ -68,22 +68,21 @@ def main_worker(rank, config):
 
 
 if __name__ == "__main__":
-    print("🎯 RetouchFormer Subset Training Script")
-    print("="*60)
+    print("RetouchFormer Subset Training Script")
 
     torch.backends.cudnn.benchmark = True
     mp.set_sharing_strategy('file_system')
 
     # loading configs
     config = json.load(open(args.config))
-    print(f"📋 Loaded config from: {args.config}")
+    print(f"Loaded config from: {args.config}")
     
     # setting distributed configurations
     config['world_size'] = get_world_size()
     config['init_method'] = f"tcp://{get_master_ip()}:{args.port}"
     config['distributed'] = True if config['world_size'] > 1 else False
     
-    print(f"🔧 Training Configuration:")
+    print(f"Training Configuration:")
     print(f"  World size: {config['world_size']}")
     print(f"  Distributed: {config['distributed']}")
     print(f"  Dataset: {config['train_data_loader']['dataroot']}")
