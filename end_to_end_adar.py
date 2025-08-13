@@ -197,7 +197,8 @@ class EndToEndRetouchPipeline:
         
         return retouched
     
-    def build_change_mask(self, input_resized_face: np.ndarray, retouched_face: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def build_change_mask(input_resized_face: np.ndarray, retouched_face: np.ndarray) -> np.ndarray:
         """
         Build a soft change mask highlighting pixels modified by the model.
         
