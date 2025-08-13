@@ -210,18 +210,15 @@ class EndToEndRetouchPipeline:
         """
         # Absolute difference per channel, then convert to grayscale magnitude
         diff = cv2.absdiff(retouched_face, input_resized_face)
-        diff_gray = cv2.cvtColor(diff, cv2.COLOR_RGB2GRAY)
-        # diff_gray[diff_gray < 5] = 0
-        diff_gray_max = diff_gray.max() + 1e-6
-        diff_gray[diff_gray>5] = diff_gray.max()
-        diff_gray = (diff_gray / diff_gray_max * 255).astype(np.uint8)
-        
+        diff_mask = cv2.cvtColor(diff, cv2.COLOR_RGB2GRAY)
+        diff_mask[diff_mask>1] = 255
+
         # Smooth the difference map to suppress noise, and use it directly as a soft mask
-        diff_blur = cv2.GaussianBlur(diff_gray, (7, 7), 0)
-        mask_soft = (diff_blur.astype(np.float32) / 255.0)
-        if mask_soft.ndim == 2:
-            mask_soft = np.expand_dims(mask_soft, axis=2)
-        return mask_soft
+        diff_mask = cv2.GaussianBlur(diff_mask, (7, 7), 0)
+        diff_mask = (diff_mask.astype(np.float32) / 255.0)
+        if diff_mask.ndim == 2:
+            diff_mask = np.expand_dims(diff_mask, axis=2)
+        return diff_mask
     
     def restore_face_to_image(self, original_image: np.ndarray, 
                             retouched_face: np.ndarray,
