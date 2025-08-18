@@ -80,6 +80,9 @@ class EndToEndRetouchPipeline:
         print("🔄 Loading RetouchFormer model...")
         self.model = self._load_retouchformer_model(model_name, checkpoint_path, epoch)
         
+        # Initialize timing statistics
+        self.forward_times = []
+        
     def _load_retouchformer_model(self, model_name: str, checkpoint_path: str, epoch: str):
         """Load the RetouchFormer model"""
         # Set CUDA device BEFORE importing model to avoid custom op conflicts
@@ -186,8 +189,19 @@ class EndToEndRetouchPipeline:
         """
         face_tensor = face_tensor.to(self.device)
         
+        # Time the forward pass
+        torch.cuda.synchronize() if self.device.type == 'cuda' else None
+        start_time = time.time()
+        
         with torch.no_grad():
             retouched_tensor, _ = self.model(face_tensor)
+        
+        torch.cuda.synchronize() if self.device.type == 'cuda' else None
+        end_time = time.time()
+        
+        # Record forward time
+        forward_time = end_time - start_time
+        self.forward_times.append(forward_time)
         
         # Convert back to numpy image
         retouched = retouched_tensor[0].cpu()
@@ -477,14 +491,28 @@ class EndToEndRetouchPipeline:
         end_time = time.time()
         total_time = end_time - start_time
         
-        print(f"\nPsrocessing complete! Successfully processed {success_count}/{len(image_files)} images")
+        print(f"\nProcessing complete! Successfully processed {success_count}/{len(image_files)} images")
         print(f"Total faces processed: {total_faces}")
         print(f"Total time: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
         if success_count > 0:
             print(f"Average time per image: {total_time/success_count:.2f} seconds")
         if total_faces > 0:
             print(f"Average time per face: {total_time/total_faces:.2f} seconds")
-        print(f"Original images copied to: {output_dir}")
+        
+        # Print forward pass timing statistics
+        if self.forward_times:
+            import numpy as np
+            forward_times_ms = [t * 1000 for t in self.forward_times]  # Convert to milliseconds
+            avg_forward_time = np.mean(forward_times_ms)
+            std_forward_time = np.std(forward_times_ms)
+            print(f"\nRetouchFormer Model Forward Pass Statistics (per single face):")
+            print(f"  Number of forward passes: {len(self.forward_times)}")
+            print(f"  Average forward time: {avg_forward_time:.2f} ms")
+            print(f"  Standard deviation: {std_forward_time:.2f} ms")
+            print(f"  Min forward time: {min(forward_times_ms):.2f} ms")
+            print(f"  Max forward time: {max(forward_times_ms):.2f} ms")
+        
+        print(f"\nOriginal images copied to: {output_dir}")
         print(f"Retouched images saved as: *_output{image_files[0].suffix} in {output_dir}")
         if self.save_face_crops:
             print(f"Face comparisons saved to: {face_crops_output_base}")
